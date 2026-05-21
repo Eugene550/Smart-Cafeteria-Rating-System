@@ -8,15 +8,16 @@ Install it using default settings.
 ## Step 2: Create a New Environment
 Open Anaconda Prompt (Windows) or terminal (Mac/Linux):
 
+```
 conda create -n smartcafeteria python=3.10
-
+```
 - `smartcafeteria` is the environment name.
 - Python 3.10 is recommended.
 
 ## Step 3: Activate the Environment
----
+```
 conda activate smartcafeteria
----
+```
 
 ## Step 4: Install Required Packages
 Install core packages using conda:
@@ -55,6 +56,10 @@ print("All packages OK")
 ```
 
 ## Notes
+- Always ensure the `smartcafeteria` environment is selected as the kernel in Jupyter Notebook or VS Code.
+- You can add VS Code integration later, but Jupyter Notebook is recommended for interactive testing.
+- When more survey data is collected, the FIS can be run on multiple reviews in batches.
+
 - Always ensure the `smartcafeteria` environment is selected as the kernel in Jupyter Notebook or VS Code.
 - You can add VS Code integration later, but Jupyter Notebook is recommended for interactive testing.
 - When more survey data is collected, the FIS can be run on multiple reviews in batches.
