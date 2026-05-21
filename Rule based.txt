@@ -1,0 +1,18 @@
+| Rule | IF (Conditions)                                                                                   | THEN (Overall Rating) |
+| ---- | ------------------------------------------------------------------------------------------------- | --------------------- |
+|  1   | Food Quality High AND Cleanliness High AND Menu Variety High AND Waiting Time Low                 | Rating = High         |
+|  2   | Food Quality High AND Cleanliness Medium AND Menu Variety Medium AND Waiting Time Medium          | Rating = High         |
+|  3   | Food Quality Medium AND Cleanliness Medium AND Menu Variety Medium AND Waiting Time Medium        | Rating = Medium       |
+|  4   | Food Quality Low OR Cleanliness Low                                                               | Rating = Low          |
+|  5   | Menu Variety Low AND Waiting Time High                                                            | Rating = Medium       |
+|  6   | Food Quality High AND Waiting Time High                                                           | Rating = Medium       |
+|  7   | Cleanliness High AND Menu Variety Low AND Waiting Time Low                                        | Rating = Medium       |
+|  8   | Food Quality Medium AND Cleanliness High AND Menu Variety Medium AND Waiting Time Medium          | Rating = Medium       |
+|  9   | Food Quality Low AND Waiting Time High                                                            | Rating = Low          |
+|  10  | Food Quality High AND Cleanliness Medium AND Menu Variety High AND Waiting Time High              | Rating = Medium       |
+|  11  | Food Quality Medium AND Cleanliness Unknown AND Menu Variety High AND Waiting Time Unknown        | Rating = Medium       |
+|  12  | Food Quality Low AND Cleanliness Medium AND Menu Variety Unknown AND Waiting Time Unknown         | Rating = Low          |
+|  13  | Food Quality High AND Menu Variety High AND Waiting Time Low AND Cleanliness Unknown              | Rating = High         |
+|  14  | Food Quality Unknown AND Cleanliness Medium AND Menu Variety High AND Waiting Time Low            | Rating = Medium       |
+|  15  | Food Quality Medium AND Cleanliness Unknown AND Menu Variety Unknown AND Waiting Time High        | Rating = Medium       |
+|  16  | Food Quality Unknown AND Cleanliness Unknown AND Menu Variety Unknown AND Waiting Time Unknown    | Rating = Medium       |
