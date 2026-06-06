@@ -66,17 +66,54 @@ python cafeteria_fis.py        # Stage 3: FULL pipeline -> final ratings
 
 ---
 
-## 4. Text Normalisation
+## 4. Text Normalisation — Ollama Setup
 
 Cleans messy English ("queue v long lah", "5/10") into standard English so VADER
 reads it correctly. Needs a small local model via Ollama.
 
-```bash
-# install Ollama from https://ollama.com  then:
+### 4a. Install Ollama
+Download and install from https://ollama.com (one Windows installer). After it
+finishes, make sure the **Ollama app is running** — look for its icon in the
+system tray (bottom-right near the clock; click the arrow to show hidden icons).
+
+### 4b. Pull and test the model (use Command Prompt, NOT PowerShell)
+On Windows the `ollama` command often works only in **cmd**, not PowerShell.
+Open Command Prompt (search "cmd" in the Start menu) and check it:
+
+```bat
+ollama --version
+```
+
+If you see a version number, run:
+
+```bat
 ollama pull llama3.2:3b
+```
+
+Wait for the download (a few GB, a few minutes). Then test it:
+
+```bat
+ollama run llama3.2:3b
+```
+
+Type "hello", confirm it replies, then type `/bye` to exit.
+
+### 4c. Run the normalisation step (from your conda / PowerShell terminal)
+```bash
 pip install ollama
 python cafeteria_normalise.py
 ```
+
+> The Python `ollama` package talks to Ollama's **background service**, so this
+> works from PowerShell even though the `ollama` *command* only runs in cmd.
+> The two terminals do not need to be the same one.
+
+### Troubleshooting Ollama
+- `'ollama' is not recognized` in PowerShell → use **cmd** instead. If cmd also
+  fails, restart the terminal, then restart the PC, then reinstall.
+- Ignore Ollama's "launch coding agents" screen (Claude Code, Codex, Droid…) —
+  those are unrelated. You only need `ollama pull` and `ollama run`.
+- The pull just being slow is normal — it is downloading the model.
 
 Notes:
 - If Ollama is not running, the step **falls back to the rule pass** instead of crashing.
