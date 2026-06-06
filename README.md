@@ -17,7 +17,7 @@ Pipeline: `reviews → (normalise) → aspect extraction → VADER scoring → F
 | `cafeteria_frontend.py` | 1 | Reads the CSV, scores each review per aspect (lexicon + VADER) |
 | `cafeteria_fcm.py` | 2 | Pools reviews per cafeteria; runs FCM to learn membership functions |
 | `cafeteria_fis.py` | 3 | Mamdani FIS — combines stages 1–2 and outputs the final ratings |
-| `cafeteria_normalise.py` |  | Cleans messy English to standard English before scoring |
+| `cafeteria_normalise.py` | 4 | Cleans messy English to standard English before scoring |
 | `Variable_and_keywords_refined.xlsx` | data | Lexicon (aspect words) + membership-function defaults |
 | `Rule_based_refined.txt` | data | The 17 expert rules (reference; rules are coded in `cafeteria_fis.py`) |
 | `*Form_Responses*.csv` | data | The Google Form review export |
