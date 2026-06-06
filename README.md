@@ -12,16 +12,18 @@ Pipeline: `reviews → (normalise) → aspect extraction → VADER scoring → F
 
 ## Project Files
 
+(listed in pipeline order)
+
 | File | Stage | What it does |
 | ---- | ----- | ------------ |
-| `cafeteria_normalise.py` | 1 | Cleaning functions (rule pass + local LLM); run alone to test cleaning |
-| `normalise_to_csv.py` | 2 | One-time helper: produces `reviews_clean.csv` from the raw CSV |
-| `cafeteria_frontend.py` | 3 | Reads the CSV, scores each review per aspect (lexicon + VADER) |
-| `cafeteria_fcm.py` | 4 | Pools reviews per cafeteria; runs FCM to learn membership functions |
-| `cafeteria_fis.py` | 5 | Mamdani FIS — combines stages 1–2 and outputs the final ratings |
+| `cafeteria_normalise.py` | 0 | Cleaning functions (rule pass + local LLM); run alone to test cleaning |
+| `normalise_to_csv.py` | 0 | One-time helper: produces `reviews_clean.csv` from the raw CSV |
+| `cafeteria_frontend.py` | 1 | Reads the CSV, scores each review per aspect (lexicon + VADER) |
+| `cafeteria_fcm.py` | 2 | Pools reviews per cafeteria; runs FCM to learn membership functions |
+| `cafeteria_fis.py` | 3 | Mamdani FIS — combines stages 1–2 and outputs the final ratings |
 | `Variable_and_keywords_refined.xlsx` | data | Lexicon (aspect words) + membership-function defaults |
 | `Rule_based_refined.txt` | data | The 17 expert rules (reference; rules are coded in `cafeteria_fis.py`) |
-| `*Form_Responses*.csv` | data | The Google Form review export (Edit to google form name to "Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1") |
+| `*Form_Responses*.csv` | data | The Google Form review export. The scripts expect the filename `Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1.csv` — rename your export to match, or change the `CSV` path in the scripts. |
 
 > `cafeteria_fis.py` runs the whole engine (it imports stages 1 and 2). Run the
 > earlier files on their own only if you want to inspect that stage's output.
@@ -38,50 +40,21 @@ pip install vaderSentiment openpyxl pandas scikit-fuzzy networkx numpy scipy
 ```
 
 > `scikit-fuzzy` and `networkx` are both needed for the FIS (Stage 3).
-> `ollama` is only needed for the optional normalisation step (Section 4).
+> `ollama` is only needed for the optional normalisation step (Section 2).
 
 ---
 
-## 2. Set Your File Paths （这个可以不用理，我已经改了）
-
-Open each script and, near the bottom, point `LEX` and `CSV` to your files. If
-everything is in the same folder, just use the filenames:
-
-```python
-LEX = "Variable_and_keywords_refined.xlsx"
-CSV = "Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1.csv"
-```
-
-To rate the **cleaned** text instead, set `CSV = "reviews_clean.csv"` (after Section 4).
-
----
-
-## 3. Run the Engine
-
-Run the stages in order to inspect each, or just run Stage 3 for the full result.
-
-```bash
-python cafeteria_frontend.py   # Stage 1: per-review aspect scores
-python cafeteria_fcm.py        # Stage 2: learned membership functions + cafeteria vectors
-python cafeteria_fis.py        # Stage 3: FULL pipeline -> final ratings
-```
-
-`cafeteria_fis.py` prints a rating per cafeteria plus face-validity sanity checks
-(all-excellent → High, bad food → Low via the veto rule, etc.).
-
----
-
-## 4. Text Normalisation (Ollama) — optional but recommended
+## 2. Text Normalisation (Ollama)
 
 Cleans messy English ("queue v long lah", "5/10") into standard English so VADER
 reads it correctly. Needs a small local model via Ollama.
 
-### 4a. Install Ollama
+### 2a. Install Ollama
 Install from https://ollama.com (one Windows installer). Make sure the **Ollama app
 is running** — look for its icon in the system tray (bottom-right near the clock;
 click the arrow to show hidden icons).
 
-### 4b. Pull and test the model (use Command Prompt, NOT PowerShell)
+### 2b. Pull and test the model (use Command Prompt, NOT PowerShell)
 On Windows the `ollama` command often works only in **cmd**. Open Command Prompt
 (search "cmd" in the Start menu):
 
@@ -93,7 +66,7 @@ ollama run llama3.2:3b
 
 For the last one, type "hello", confirm it replies, then type `/bye` to exit.
 
-### 4c. Produce the cleaned CSV (from your conda / PowerShell terminal)
+### 2c. Produce the cleaned CSV (from your conda / PowerShell terminal)
 ```bash
 pip install ollama
 python normalise_to_csv.py
@@ -103,7 +76,7 @@ This reads your raw CSV, cleans every review with the local model, prints a few
 before/after pairs, and saves **`reviews_clean.csv`** (same data + a `review_clean`
 column). Run it once; it takes a minute or two.
 
-### 4d. Rate using the cleaned text
+### 2d. Rate using the cleaned text
 Set `CSV = "reviews_clean.csv"` in `cafeteria_fis.py` (and `cafeteria_fcm.py` if you
 run it alone), then run `python cafeteria_fis.py`. The pipeline **automatically scores
 the `review_clean` column when it is present**, so no other change is needed.
@@ -126,12 +99,41 @@ the `review_clean` column when it is present**, so no other change is needed.
 
 ---
 
+## 3. Set Your File Paths
+
+Open each script and, near the bottom, point `LEX` and `CSV` to your files. If
+everything is in the same folder, just use the filenames:
+
+```python
+LEX = "Variable_and_keywords_refined.xlsx"
+CSV = "Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1.csv"
+```
+
+To rate the **cleaned** text instead, set `CSV = "reviews_clean.csv"` (after Section 2).
+
+---
+
+## 4. Run the Engine
+
+Run the stages in order to inspect each, or just run Stage 3 for the full result.
+
+```bash
+python cafeteria_frontend.py   # Stage 1: per-review aspect scores
+python cafeteria_fcm.py        # Stage 2: learned membership functions + cafeteria vectors
+python cafeteria_fis.py        # Stage 3: FULL pipeline -> final ratings
+```
+
+`cafeteria_fis.py` prints a rating per cafeteria plus face-validity sanity checks
+(all-excellent → High, bad food → Low via the veto rule, etc.).
+
+---
+
 ## General Troubleshooting
 
 - `ModuleNotFoundError: No module named 'skfuzzy'` → install name is `scikit-fuzzy` (with hyphen).
 - `ModuleNotFoundError: No module named 'networkx'` → `pip install networkx`.
 - `ModuleNotFoundError: No module named 'cafeteria_frontend'` → keep all `.py` files in the same folder.
-- `FileNotFoundError` → fix the `LEX` / `CSV` paths (Section 2).
+- `FileNotFoundError` → fix the `LEX` / `CSV` paths (Section 3).
 - Scores printing as `np.float64(0.53)` → cosmetic only; the value is correct.
 
 ---
