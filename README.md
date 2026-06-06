@@ -31,7 +31,7 @@ Pipeline: `reviews → (normalise) → aspect extraction → VADER scoring → F
 
 
 ---
-## (Use **VS Code**)
+## (我们主要用VS Code)
 
 ## 1. Install Required Libraries
 
