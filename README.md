@@ -76,7 +76,7 @@ This reads your raw CSV, cleans every review with the local model, prints a few
 before/after pairs, and saves **`reviews_clean.csv`** (same data + a `review_clean`
 column). Run it once; it takes a minute or two.
 
-### 2d. Rate using the cleaned text （这个步骤是跟你说跑了2c后会save去一个新的csv file叫 `reviews_clean`）
+### 2d. Rate using the cleaned text （这个步骤是跟你说跑了2c后，ollama整理后的data会save去一个新的csv file叫 `reviews_clean`）
 Set `CSV = "reviews_clean.csv"` in `cafeteria_fis.py` (and `cafeteria_fcm.py` if you
 run it alone), then run `python cafeteria_fis.py`. The pipeline **automatically scores
 the `review_clean` column when it is present**, so no other change is needed.
