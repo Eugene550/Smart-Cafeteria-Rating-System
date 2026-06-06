@@ -99,7 +99,7 @@ the `review_clean` column when it is present**, so no other change is needed.
 
 ---
 
-## 3. Set Your File Paths
+## 3. Set Your File Paths （这个不用理）
 
 Open each script and, near the bottom, point `LEX` and `CSV` to your files. If
 everything is in the same folder, just use the filenames:
