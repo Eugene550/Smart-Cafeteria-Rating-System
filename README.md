@@ -1,6 +1,7 @@
 # Install the two libraries it needs:
 ```bash
 pip install vaderSentiment openpyxl pandas 
+```markdown
 
 # Then fix the two file paths at the bottom of the script. Right now they point to my environment:
 pythonLEX = "/mnt/user-data/uploads/Variable_and_keywords_refined.xlsx"
@@ -13,3 +14,4 @@ CSV = "Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1
 # Then run it:
 ```bash
 python cafeteria_frontend.py
+```markdown
