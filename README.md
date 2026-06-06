@@ -6,7 +6,7 @@ Activate your conda environment first, then run:
 pip install vaderSentiment openpyxl pandas scikit-fuzzy networkx numpy scipy
 ```
 
-### 2. Run the Progra
+### 2. Run the Program
 ```bash
 python cafeteria_frontend.py
 ```
