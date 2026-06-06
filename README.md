@@ -33,7 +33,7 @@ Pipeline: `reviews → (normalise) → aspect extraction → VADER scoring → F
 
 ## 1. Install Required Libraries
 
-Open the project folder in VS Code, then open its terminal (Terminal → New Terminal) and run:
+Open the project folder (确保你的folder里面有所有你下载的python file, csv和txt file) in VS Code, then open its terminal (Terminal → New Terminal) and run:
 
 ```bash
 pip install vaderSentiment openpyxl pandas scikit-fuzzy networkx numpy scipy
@@ -54,7 +54,7 @@ Install from https://ollama.com (one Windows installer). Make sure the **Ollama 
 is running** — look for its icon in the system tray (bottom-right near the clock;
 click the arrow to show hidden icons).
 
-### 2b. Pull and test the model (use **Command Prompt**)
+### 2b. Pull and test the model (use **Command Prompt**（关掉VS Code, 赢cmd跑）)
 On Windows the `ollama` command often works only in **cmd**. Open Command Prompt
 (search "cmd" in the Start menu):
 
@@ -66,7 +66,7 @@ ollama run llama3.2:3b
 
 For the last one, type "hello", confirm it replies, then type `/bye` to exit.
 
-### 2c. Produce the cleaned CSV (from the VS Code terminal (这个步骤开始用**VS Code**跑，确保你跑的folder里面有所有你要下载的python file, csv和txt file))
+### 2c. Produce the cleaned CSV (from the VS Code terminal (这个步骤开始用回**VS Code**的Terminal来跑)
 ```bash
 pip install ollama
 python normalise_to_csv.py
