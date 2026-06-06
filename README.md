@@ -54,7 +54,7 @@ Install from https://ollama.com (one Windows installer). Make sure the **Ollama 
 is running** — look for its icon in the system tray (bottom-right near the clock;
 click the arrow to show hidden icons).
 
-### 2b. Pull and test the model (use **Command Prompt**（关掉VS Code, 赢cmd跑）)
+### 2b. Pull and test the model (use **Command Prompt**（关掉VS Code, 开cmd跑）)
 On Windows the `ollama` command often works only in **cmd**. Open Command Prompt
 (search "cmd" in the Start menu):
 
