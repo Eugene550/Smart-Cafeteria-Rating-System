@@ -3,7 +3,7 @@
 ### 1. Install Required Libraries
 Activate your conda environment first, then run:
 ```bash
-pip install vaderSentiment openpyxl pandas scikit-fuzzy
+pip install vaderSentiment openpyxl pandas scikit-fuzzy networkx
 ```
 
 ### 2. Run the Progra
