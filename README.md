@@ -33,7 +33,7 @@ Pipeline: `reviews → (normalise) → aspect extraction → VADER scoring → F
 ---
 ## (我们主要用VS Code)
 
-## 1. Install Required Libraries
+## 1. Install Required Libraries （用cd command改去你们save这些file的folder path）
 
 Open the project folder (确保你的folder里面有所有你下载的python file, csv和txt file) in VS Code, then open its terminal (Terminal → New Terminal) and run:
 
