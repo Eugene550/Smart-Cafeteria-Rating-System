@@ -1,5 +1,5 @@
 # Install the two libraries it needs:
-pip install vaderSentiment openpyxl pandas
+pip install vaderSentiment openpyxl pandas "Copy"
 
 # Then fix the two file paths at the bottom of the script. Right now they point to my environment:
 pythonLEX = "/mnt/user-data/uploads/Variable_and_keywords_refined.xlsx"
