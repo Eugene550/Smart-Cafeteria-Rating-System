@@ -1,0 +1,60 @@
+SMART CAFETERIA RATING SYSTEM — REFINED FUZZY RULE BASE
+========================================================
+
+Conventions (read first):
+- Four input variables, all scored so that HIGH = GOOD:
+    Food Quality, Cleanliness, Menu Variety, Service Speed.
+- Service Speed was renamed from "Waiting Time" to keep the polarity intuitive:
+    High = quick / short wait (good), Low = slow / long queue (bad).
+- "Unknown" has been removed. It is not a fuzzy level (it means "no data"), so if a
+    review does not mention an aspect, default that aspect to Medium BEFORE inference.
+- Rule 17 is a low-priority DEFAULT so that no input combination is ever left unrated.
+- Levels: Low / Medium / High.  Output: Overall Rating = Low / Medium / High.
+
+| Rule | IF (Conditions)                                                                  | THEN (Rating) |
+| ---- | -------------------------------------------------------------------------------- | ------------- |
+|  1   | Food High AND Cleanliness High AND Menu Variety High AND Service Speed High      | High          |
+|  2   | Food High AND Cleanliness High AND Service Speed High                            | High          |
+|  3   | Food High AND Cleanliness High AND Menu Variety Medium AND Service Speed High    | High          |
+|  4   | Food High AND Menu Variety High AND Service Speed High                           | High          |
+|  5   | Food High AND Cleanliness Medium AND Menu Variety Medium AND Service Speed Medium| High          |
+|  6   | Food Medium AND Cleanliness Medium AND Menu Variety Medium AND Service Speed Medium | Medium     |
+|  7   | Food Medium AND Cleanliness High AND Menu Variety Medium AND Service Speed Medium| Medium        |
+|  8   | Food High AND Service Speed Low                                                  | Medium        |
+|  9   | Food High AND Cleanliness Medium AND Menu Variety High AND Service Speed Low     | Medium        |
+|  10  | Cleanliness High AND Menu Variety Low AND Service Speed High                     | Medium        |
+|  11  | Food High AND Menu Variety Low AND Service Speed Low                             | Medium        |
+|  12  | Food Medium AND Cleanliness Medium AND Menu Variety High AND Service Speed High  | Medium        |
+|  13  | Food Medium AND Cleanliness Medium AND Menu Variety Medium AND Service Speed Low | Medium        |
+|  14  | Cleanliness High AND Menu Variety Low AND Service Speed Low                      | Medium        |
+|  15  | Food Medium AND Cleanliness Medium AND Menu Variety Low AND Service Speed Low    | Low           |
+|  16  | Food Low OR Cleanliness Low                                                      | Low           |
+|  17  | (Default) any combination not strongly matched above                            | Medium        |
+
+Notes on the rule base:
+- Rules 1-5 cover the strong/positive region (something is genuinely good).
+- Rules 6-14 cover the common mixed / average cases.
+- LOW region (rules 15-16):
+    * Rule 16 is the VETO rule: bad food OR poor cleanliness forces Low regardless of
+      the other aspects (an OR rule, fires on either condition). Because it is an OR,
+      it already absorbs EVERY case where food or cleanliness is Low.
+    * Rule 15 covers the case the veto misses: nothing is actually good (no High),
+      food and cleanliness are only passable (Medium), AND the two remaining aspects
+      are both bad (Menu Variety Low, Service Speed Low). Previously this drifted to
+      the default Medium, which was too generous.
+- Two changes were made so Low is reached fairly without padding:
+    * Rule 11 was TIGHTENED (added "Food High") so a clearly weak cafeteria is no
+      longer rescued to Medium just because variety and speed are poor.
+    * Rule 14 was ADDED so that genuinely clean cafeterias (Cleanliness High) with
+      poor variety and slow service still land on Medium, not Low.
+- Why only two Low rules: rule 16's OR veto absorbs all Food-Low / Cleanliness-Low
+    cases, so the only remaining genuine Low scenario is rule 15. Adding more Low
+    rules would duplicate the veto (e.g. "Food Low AND Service Speed Low" is pointless
+    because Food Low alone already fires rule 16). Every rule here maps to a scenario
+    you can state out loud.
+- Rule 17 (default) is implemented in code as the fallback consequent — e.g. a
+    low-weight "Rating is Medium" rule — so that an input matching no other rule still
+    produces an output. This prevents "dead zones" in a Mamdani system.
+- You have 17 rules, not the full 3^4 = 81 combinations. A Mamdani FIS does not need
+    every combination because rules fire PARTIALLY (by degree of match); a curated set
+    plus the veto and default rules covers the input space.
