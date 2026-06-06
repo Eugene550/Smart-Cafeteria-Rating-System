@@ -23,7 +23,7 @@ Pipeline: `reviews → (normalise) → aspect extraction → VADER scoring → F
 | `cafeteria_fis.py` | 3 | Mamdani FIS — combines stages 1–2 and outputs the final ratings |
 | `Variable_and_keywords_refined.xlsx` | data | Lexicon (aspect words) + membership-function defaults |
 | `Rule_based_refined.txt` | data | The 17 expert rules (reference; rules are coded in `cafeteria_fis.py`) |
-| `*Form_Responses*.csv` | data | The Google Form review export. The scripts expect the filename `Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1.csv` — rename your export to match, or change the `CSV` path in the scripts. |
+| `*Form_Responses*.csv` | data | The Google Form review export. (Make sure the google form csv file you download must change to this name `Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1`) |
 
 > `cafeteria_fis.py` runs the whole engine (it imports stages 1 and 2). Run the
 > earlier files on their own only if you want to inspect that stage's output.
