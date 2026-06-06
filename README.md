@@ -64,7 +64,7 @@ ollama pull llama3.2:3b
 ollama run llama3.2:3b
 ```
 
-For the last one, type "hello", confirm it replies, then type `/bye` to exit.
+For the last one, type "hello", confirm it replies, then type `/bye` to exit. (这里是测试ollama的功能，你先Hello, 他会问你东西，然后可以测试，最后不要了就打个 `/bye`)
 
 ### 2c. Produce the cleaned CSV (from the VS Code terminal (这个步骤开始用回**VS Code**的Terminal来跑)
 ```bash
