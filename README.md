@@ -1,65 +1,11 @@
-# Smart-Cafeteria-Rating-System
-# Smart Cafeteria Project Setup Instructions
-
-## Step 1: Install Anaconda
-Download Anaconda for your OS: https://www.anaconda.com/products/distribution
-Install it using default settings.
-
-## Step 2: Create a New Environment
-Open Anaconda Prompt (Windows) or terminal (Mac/Linux):
-
-```
-conda create -n smartcafeteria python=3.10
-```
-- `smartcafeteria` is the environment name.
-- Python 3.10 is recommended.
-
-## Step 3: Activate the Environment
-```
-conda activate smartcafeteria
-```
-
-## Step 4: Install Required Packages
-Install core packages using conda:
-```
-conda install numpy pandas openpyxl scipy networkx
-```
-Install additional packages using pip:
-```
-pip install scikit-fuzzy spacy ipykernel
-```
-
-## Step 5: Download spaCy English Model
-```
-python -m spacy download en_core_web_sm
-```
-
-## Step 6: Register the Environment in Jupyter
-```
-python -m ipykernel install --user --name=smartcafeteria --display-name "Python (smartcafeteria)"
-```
-- `--name`: internal kernel name
-- `--display-name`: shows in Jupyter kernel selector
-
-## Step 7: Launch Jupyter Notebook
-```
-jupyter-notebook
-```
-- This opens Jupyter Notebook in your browser.
-- Navigate to your project folder and open `Fuzzy_project.ipynb`.
-
-## Step 8: Verify Setup (Optional)
-Run the following to check if all packages are installed correctly:
-```python
-import numpy, pandas, spacy, skfuzzy
-print("All packages OK")
-```
-
-## Notes
-- Always ensure the `smartcafeteria` environment is selected as the kernel in Jupyter Notebook or VS Code.
-- You can add VS Code integration later, but Jupyter Notebook is recommended for interactive testing.
-- When more survey data is collected, the FIS can be run on multiple reviews in batches.
-
-- Always ensure the `smartcafeteria` environment is selected as the kernel in Jupyter Notebook or VS Code.
-- You can add VS Code integration later, but Jupyter Notebook is recommended for interactive testing.
-- When more survey data is collected, the FIS can be run on multiple reviews in batches.
+Here's what you need to run cafeteria_frontend.py:
+Install the two libraries it needs:
+pip install vaderSentiment openpyxl pandas
+Then fix the two file paths at the bottom of the script. Right now they point to my environment:
+pythonLEX = "/mnt/user-data/uploads/Variable_and_keywords_refined.xlsx"
+CSV = "/mnt/user-data/uploads/Google_Form___..._Responses_1.csv"
+Change those to wherever the two files sit on your computer — for example, if everything's in the same folder, just use the filenames:
+pythonLEX = "Variable_and_keywords_refined.xlsx"
+CSV = "Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1.csv"
+Then run it:
+python cafeteria_frontend.py
