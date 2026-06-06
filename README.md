@@ -42,7 +42,7 @@ pip install vaderSentiment openpyxl pandas scikit-fuzzy networkx numpy scipy
 
 ---
 
-## 2. Set Your File Paths
+## 2. Set Your File Paths （这个可以不用理，我已经改了）
 
 Open each script and, near the bottom, point `LEX` and `CSV` to your files. If
 everything is in the same folder, just use the filenames:
