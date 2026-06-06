@@ -29,7 +29,9 @@ Pipeline: `reviews → (normalise) → aspect extraction → VADER scoring → F
 > earlier files on their own only if you want to inspect that stage's output.
 > `aspect_scoring.py` (an early draft) is no longer used and can be deleted.
 
+
 ---
+
 
 ## 1. Install Required Libraries
 
@@ -42,7 +44,9 @@ pip install vaderSentiment openpyxl pandas scikit-fuzzy networkx numpy scipy
 > `scikit-fuzzy` and `networkx` are both needed for the FIS (Stage 3).
 > `ollama` is only needed for the optional normalisation step (Section 2).
 
+
 ---
+
 
 ## 2. Text Normalisation (Ollama)
 
@@ -97,7 +101,9 @@ the `review_clean` column when it is present**, so no other change is needed.
   You only need `ollama pull` and `ollama run`.
 - The pull just being slow is normal — it is downloading the model.
 
+
 ---
+
 
 ## 3. Set Your File Paths （这个不用理）
 
