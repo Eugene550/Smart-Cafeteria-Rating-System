@@ -106,7 +106,7 @@ everything is in the same folder, just use the filenames:
 
 ```python
 LEX = "Variable_and_keywords_refined.xlsx"
-CSV = "Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1.csv"
+CSV = "reviews_clean.csv"
 ```
 
 To rate the **cleaned** text instead, set `CSV = "reviews_clean.csv"` (after Section 2).
