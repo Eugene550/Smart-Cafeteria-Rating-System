@@ -53,7 +53,7 @@ pip install vaderSentiment openpyxl pandas scikit-fuzzy networkx numpy scipy
 Cleans messy English ("queue v long lah", "5/10") into standard English so VADER
 reads it correctly. Needs a small local model via Ollama.
 
-### 2a. Install Ollama (下载了exe要install，install完之后直接退出)
+### 2a. Install Ollama (下载了exe要install)
 Install from https://ollama.com (one Windows installer). Make sure the **Ollama app
 is running** — look for its icon in the system tray (bottom-right near the clock;
 click the arrow to show hidden icons).
