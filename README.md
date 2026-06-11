@@ -140,22 +140,22 @@ You should see:
 
 ## Step 4: Install Required Libraries
 
-Install all required libraries using:
+Install all required libraries at once:
 
 ```bash
 pip install vaderSentiment openpyxl pandas scikit-fuzzy networkx numpy scipy
 ```
 
-Alternatively, install them one by one:
+Or install them individually:
 
 ```bash
-pip install pandas
-pip install numpy
-pip install scikit-fuzzy
-pip install openpyxl
-pip install networkx
-pip install scipy
 pip install vaderSentiment
+pip install openpyxl
+pip install pandas
+pip install scikit-fuzzy
+pip install networkx
+pip install numpy
+pip install scipy
 ```
 
 ---
@@ -218,6 +218,8 @@ Create a test file:
 ```python
 import pandas
 import numpy
+import scipy
+import networkx
 import skfuzzy
 import openpyxl
 import vaderSentiment
@@ -414,13 +416,7 @@ code .
 
 ```bash
 python cafeteria_frontend.py
-```
-
-```bash
 python cafeteria_fcm.py
-```
-
-```bash
 python cafeteria_fis.py
 ```
 
@@ -437,11 +433,13 @@ requirements.txt
 Add:
 
 ```text
-pandas
-numpy
-scikit-fuzzy
-openpyxl
 vaderSentiment
+openpyxl
+pandas
+scikit-fuzzy
+networkx
+numpy
+scipy
 ```
 
 Users can then install all dependencies with a single command:
