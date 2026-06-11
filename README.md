@@ -39,7 +39,29 @@ Project_codes_file/
 
 Before running the project, install the following software:
 
-## 1. Install Anaconda
+## 1. Install Python
+
+Download the latest Python (3.11 recommended) from:
+
+https://www.python.org/downloads/
+
+- Choose the installer for your OS (Windows / Mac / Linux).
+- **Important:** Check the box **“Add Python to PATH”** before clicking Install.
+- Verify installation by opening a terminal / command prompt and running:
+
+```bash
+python --version
+```
+
+Expected output example:
+
+```text
+Python 3.11.4
+```
+
+---
+
+## 2. Install Anaconda
 
 Download and install Anaconda:
 
@@ -49,7 +71,7 @@ Use the default installation settings.
 
 ---
 
-## 2. Install Visual Studio Code (VS Code)
+## 3. Install Visual Studio Code (VS Code)
 
 Download and install VS Code:
 
@@ -439,5 +461,3 @@ A Hybrid Fuzzy Logic-Based Cafeteria Evaluation System using:
 - Mamdani Fuzzy Inference System (FIS)
 
 to evaluate cafeteria performance based on customer reviews.
-
----
