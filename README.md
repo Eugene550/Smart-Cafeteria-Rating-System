@@ -24,7 +24,7 @@ Project_codes_file/
 ├── cafeteria_normalise.py
 ├── normalise_to_csv.py
 │
-├── reviews_clean.csv
+├── reviews_clean.csv (do not need to download)
 ├── Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1.csv
 │
 ├── Variable_and_keywords_refined.xlsx
