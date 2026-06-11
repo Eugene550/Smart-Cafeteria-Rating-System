@@ -143,7 +143,7 @@ You should see:
 Install all required libraries using:
 
 ```bash
-pip install pandas numpy scikit-fuzzy openpyxl vaderSentiment
+pip install vaderSentiment openpyxl pandas scikit-fuzzy networkx numpy scipy
 ```
 
 Alternatively, install them one by one:
@@ -153,6 +153,8 @@ pip install pandas
 pip install numpy
 pip install scikit-fuzzy
 pip install openpyxl
+pip install networkx
+pip install scipy
 pip install vaderSentiment
 ```
 
