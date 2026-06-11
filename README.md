@@ -1,153 +1,443 @@
 # Smart Cafeteria Rating System
 
-A hybrid fuzzy-logic system that turns text reviews into a 1.0–5.0 rating per cafeteria.
+## Overview
 
-- **Knowledge-driven half:** expert IF–THEN rules in a Mamdani fuzzy inference system.
-- **Data-driven half:** Fuzzy C-Means learns where Low / Medium / High sit and sets the membership functions.
-- The two are coupled — FCM builds the scale, the rules reason on it; neither produces a rating alone.
+This project is a **Hybrid Fuzzy Logic-Based Cafeteria Rating System** that evaluates cafeteria performance based on customer reviews.
 
-Pipeline: `reviews → (normalise) → aspect extraction → VADER scoring → FCM → Mamdani FIS → rating`
+The system combines:
 
----
-
-## Project Files
-
-(listed in pipeline order)
-
-| File | Stage | What it does |
-| ---- | ----- | ------------ |
-| `cafeteria_normalise.py` | 0 | Cleaning functions (rule pass + local LLM); run alone to test cleaning |
-| `normalise_to_csv.py` | 0 | One-time helper: produces `reviews_clean.csv` from the raw CSV |
-| `cafeteria_frontend.py` | 1 | Reads the CSV, scores each review per aspect (lexicon + VADER) |
-| `cafeteria_fcm.py` | 2 | Pools reviews per cafeteria; runs FCM to learn membership functions |
-| `cafeteria_fis.py` | 3 | Mamdani FIS — combines stages 1–2 and outputs the final ratings |
-| `Variable_and_keywords_refined.xlsx` | data | Lexicon (aspect words) + membership-function defaults |
-| `Rule_based_refined.txt` | data | The 17 expert rules (reference; rules are coded in `cafeteria_fis.py`) |
-| `*Form_Responses*.csv` | data | The Google Form review export. (Make sure the google form csv file you download must change to this name `Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1`) |
-
-> `cafeteria_fis.py` runs the whole engine (it imports stages 1 and 2). Run the
-> earlier files on their own only if you want to inspect that stage's output.
-> `aspect_scoring.py` (an early draft) is no longer used and can be deleted.
-
+- Knowledge-Driven Approach (Fuzzy Inference System)
+- Data-Driven Approach (Fuzzy C-Means Clustering)
+- Sentiment Analysis using VADER
+- Expert-defined Rules
 
 ---
-## (我们主要用VS Code)
 
-## 1. Install Required Libraries （用cd command改去你们save这些file的folder path）
+## Project Structure
 
-Open the project folder (确保你的folder里面有所有你下载的python file, csv和txt file) in VS Code, then open its terminal (Terminal → New Terminal) and run:
-
-```bash
-pip install vaderSentiment openpyxl pandas scikit-fuzzy networkx numpy scipy
+```text
+Project_codes_file/
+│
+├── cafeteria_frontend.py
+├── cafeteria_fcm.py
+├── cafeteria_fis.py
+├── cafeteria_normalise.py
+├── normalise_to_csv.py
+│
+├── reviews_clean.csv
+├── Google_Form___Text-Only_Cafeteria_Feedback__Responses__-_Form_Responses_1.csv
+│
+├── Variable_and_keywords_refined.xlsx
+├── Rule_based_refined.txt
+│
+└── README.md
 ```
 
-> `scikit-fuzzy` and `networkx` are both needed for the FIS (Stage 3).
-> `ollama` is only needed for the optional normalisation step (Section 2).
+---
 
+# Prerequisites
+
+Before running the project, install the following software:
+
+## 1. Install Anaconda
+
+Download and install Anaconda:
+
+https://www.anaconda.com/download
+
+Use the default installation settings.
 
 ---
 
+## 2. Install Visual Studio Code (VS Code)
 
-## 2. Text Normalisation (Ollama)
+Download and install VS Code:
 
-Cleans messy English ("queue v long lah", "5/10") into standard English so VADER
-reads it correctly. Needs a small local model via Ollama.
+https://code.visualstudio.com/
 
-### 2a. Install Ollama (下载了exe要install)
-Install from https://ollama.com (one Windows installer). Make sure the **Ollama app
-is running** — look for its icon in the system tray (bottom-right near the clock;
-click the arrow to show hidden icons).
+Use the default installation settings.
 
-### 2b. Pull and test the model (use **Command Prompt**（关掉VS Code, 开cmd跑）)
-On Windows the `ollama` command often works only in **cmd**. Open Command Prompt
-(search "cmd" in the Start menu):
+---
 
-```bat
-ollama --version
+# Setting Up the Environment
+
+## Step 1: Open Anaconda Prompt
+
+After installing Anaconda:
+
+1. Open the Start Menu.
+2. Search for:
+
+```text
+Anaconda Prompt
+```
+
+3. Open it.
+
+You should see:
+
+```text
+(base) C:\Users\YourName>
+```
+
+---
+
+## Step 2: Create a New Conda Environment
+
+Run the following command:
+
+```bash
+conda create -n cafeteria python=3.11
+```
+
+When prompted, type:
+
+```text
+y
+```
+
+and press Enter.
+
+---
+
+## Step 3: Activate the Environment
+
+Run:
+
+```bash
+conda activate cafeteria
+```
+
+You should see:
+
+```text
+(cafeteria) C:\Users\YourName>
+```
+
+---
+
+## Step 4: Install Required Libraries
+
+Install all required libraries using:
+
+```bash
+pip install pandas numpy scikit-fuzzy openpyxl vaderSentiment
+```
+
+Alternatively, install them one by one:
+
+```bash
+pip install pandas
+pip install numpy
+pip install scikit-fuzzy
+pip install openpyxl
+pip install vaderSentiment
+```
+
+---
+
+# Opening the Project in VS Code
+
+## Step 5: Navigate to the Project Folder
+
+Example:
+
+```bash
+cd Desktop
+cd Project_codes_file
+```
+
+Replace the path with your actual project location.
+
+---
+
+## Step 6: Open VS Code
+
+Run:
+
+```bash
+code .
+```
+
+VS Code will open the project folder.
+
+---
+
+## Step 7: Select the Correct Python Interpreter
+
+1. Press:
+
+```text
+Ctrl + Shift + P
+```
+
+2. Search for:
+
+```text
+Python: Select Interpreter
+```
+
+3. Select:
+
+```text
+cafeteria (Python 3.11)
+```
+
+This ensures VS Code uses the correct Anaconda environment.
+
+---
+
+# Verify Installation
+
+Create a test file:
+
+```python
+import pandas
+import numpy
+import skfuzzy
+import openpyxl
+import vaderSentiment
+
+print("All packages installed successfully!")
+```
+
+Run:
+
+```bash
+python test.py
+```
+
+Expected output:
+
+```text
+All packages installed successfully!
+```
+
+---
+
+# Running the System
+
+## Stage 1: Process Customer Reviews
+
+Run:
+
+```bash
+python cafeteria_frontend.py
+```
+
+### Purpose
+
+- Read customer reviews
+- Detect cafeteria aspects
+- Perform sentiment analysis
+- Generate aspect scores
+
+---
+
+## Stage 2: Fuzzy C-Means Clustering (FCM)
+
+Run:
+
+```bash
+python cafeteria_fcm.py
+```
+
+### Purpose
+
+- Learn fuzzy membership function centres
+- Generate Low, Medium, and High fuzzy sets
+- Produce cafeteria average vectors
+
+---
+
+## Stage 3: Fuzzy Inference System (FIS)
+
+Run:
+
+```bash
+python cafeteria_fis.py
+```
+
+### Purpose
+
+- Apply fuzzy rules
+- Generate final cafeteria ratings
+- Produce fuzzy classification results
+
+---
+
+# Optional: Text Normalisation Using Ollama
+
+The file:
+
+```text
+cafeteria_normalise.py
+```
+
+supports local Large Language Models (LLMs) through Ollama.
+
+If Ollama is not installed, the system will automatically use rule-based text cleaning.
+
+---
+
+## Install Ollama
+
+Download Ollama:
+
+https://ollama.com
+
+Install using default settings.
+
+---
+
+## Download a Model
+
+Run:
+
+```bash
 ollama pull llama3.2:3b
+```
+
+---
+
+## Verify Installation
+
+Run:
+
+```bash
 ollama run llama3.2:3b
 ```
 
-For the last one, type "hello", confirm it replies, then type `/bye` to exit. (这里是测试ollama的功能，你先Hello, 他会问你东西，然后可以测试，最后不要了就打个 `/bye`)
-
-### 2c. Produce the cleaned CSV (from the VS Code terminal (这个步骤开始用回**VS Code**的Terminal来跑)
-```bash
-pip install ollama
-python normalise_to_csv.py
-```
-
-This reads your raw CSV, cleans every review with the local model, prints a few
-before/after pairs, and saves **`reviews_clean.csv`** (same data + a `review_clean`
-column). Run it once; it takes a minute or two.
-
-### 2d. Rate using the cleaned text （这个步骤是跟你说跑了2c后，ollama整理后的data会save去一个新的csv file叫 `reviews_clean`）
-Set `CSV = "reviews_clean.csv"` in `cafeteria_fis.py` (and `cafeteria_fcm.py` if you
-run it alone), then run `python cafeteria_fis.py`. The pipeline **automatically scores
-the `review_clean` column when it is present**, so no other change is needed.
-
-> Tip: run the pipeline once on the raw CSV and once on `reviews_clean.csv` and compare
-> the ratings. That before/after is good evidence for the report that cleaning helped.
-
-### Notes
-- If Ollama is not running, cleaning **falls back to the rule pass** instead of crashing.
-- Temperature is 0, so the model output is reproducible.
-- To switch to an API model later, change only the `MODEL_CALL` line in `cafeteria_normalise.py`.
-- The model only rewrites text; it never decides aspect or sentiment (that stays with the lexicon + VADER).
-
-### Troubleshooting Ollama
-- `'ollama' is not recognized` in PowerShell → use **cmd**. If cmd also fails, restart
-  the terminal, then restart the PC, then reinstall.
-- Ignore Ollama's "launch coding agents" screen (Claude Code, Codex, Droid…) — unrelated.
-  You only need `ollama pull` and `ollama run`.
-- The pull just being slow is normal — it is downloading the model.
-
+If the model responds, Ollama has been installed successfully.
 
 ---
 
+# Common Errors and Solutions
 
-## 3. Set Your File Paths （这个不用理）
+## Error: ModuleNotFoundError
 
-Open each script and, near the bottom, point `LEX` and `CSV` to your files. If
-everything is in the same folder, just use the filenames:
+Example:
 
-```python
-LEX = "Variable_and_keywords_refined.xlsx"
-CSV = "reviews_clean.csv"
+```text
+ModuleNotFoundError: No module named 'pandas'
 ```
 
-To rate the **cleaned** text instead, set `CSV = "reviews_clean.csv"` (after Section 2).
+### Solution
 
----
-
-## 4. Run the Engine
-
-Run the stages in order to inspect each, or just run Stage 3 for the full result.
+Install the missing package:
 
 ```bash
-python cafeteria_frontend.py   # Stage 1: per-review aspect scores
-python cafeteria_fcm.py        # Stage 2: learned membership functions + cafeteria vectors
-python cafeteria_fis.py        # Stage 3: FULL pipeline -> final ratings
+pip install pandas
 ```
 
-`cafeteria_fis.py` prints a rating per cafeteria plus face-validity sanity checks
-(all-excellent → High, bad food → Low via the veto rule, etc.).
+---
+
+## Error: Python Was Not Found
+
+### Solution
+
+Activate the Conda environment first:
+
+```bash
+conda activate cafeteria
+```
 
 ---
 
-## General Troubleshooting
+## Error: No Module Named 'skfuzzy'
 
-- `ModuleNotFoundError: No module named 'skfuzzy'` → install name is `scikit-fuzzy` (with hyphen).
-- `ModuleNotFoundError: No module named 'networkx'` → `pip install networkx`.
-- `ModuleNotFoundError: No module named 'cafeteria_frontend'` → keep all `.py` files in the same folder.
-- `FileNotFoundError` → fix the `LEX` / `CSV` paths (Section 3).
-- Scores printing as `np.float64(0.53)` → cosmetic only; the value is correct.
+### Solution
+
+```bash
+pip install scikit-fuzzy
+```
 
 ---
 
-## Notes for the Report / Viva
+## Error: No Module Named 'vaderSentiment'
 
-- Aspects are scored by **VADER** (strength) using the **lexicon** for which-aspect; scores are never hand-set.
-- **FCM** is run per aspect (1-D) on all reviews pooled, so the Low/Medium/High scale is shared across cafeterias.
-- An aspect mentioned by **no** review falls back to Medium (rare, since the form prompts all four aspects).
-- FPC (fuzzy partition coefficient) is reported per aspect as a cluster-validity check.
-- Normalisation is a front-end cleaning step only; keeping `review` and `review_clean` side by side lets you validate it didn't change meaning.
+### Solution
+
+```bash
+pip install vaderSentiment
+```
+
+---
+
+# Recommended Workflow
+
+Every time you want to run the project:
+
+### 1. Open Anaconda Prompt
+
+```bash
+conda activate cafeteria
+```
+
+### 2. Navigate to the Project Folder
+
+```bash
+cd path_to_project
+```
+
+### 3. Open VS Code
+
+```bash
+code .
+```
+
+### 4. Run the System
+
+```bash
+python cafeteria_frontend.py
+```
+
+```bash
+python cafeteria_fcm.py
+```
+
+```bash
+python cafeteria_fis.py
+```
+
+---
+
+# Creating a Requirements File (Recommended)
+
+Create a file named:
+
+```text
+requirements.txt
+```
+
+Add:
+
+```text
+pandas
+numpy
+scikit-fuzzy
+openpyxl
+vaderSentiment
+```
+
+Users can then install all dependencies with a single command:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# Authors
+
+**Smart Cafeteria Rating System**
+
+A Hybrid Fuzzy Logic-Based Cafeteria Evaluation System using:
+
+- Sentiment Analysis (VADER)
+- Fuzzy C-Means Clustering (FCM)
+- Mamdani Fuzzy Inference System (FIS)
+
+to evaluate cafeteria performance based on customer reviews.
+
+---
