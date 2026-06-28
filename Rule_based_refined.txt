@@ -55,6 +55,3 @@ Notes on the rule base:
 - Rule 17 (default) is implemented in code as the fallback consequent — e.g. a
     low-weight "Rating is Medium" rule — so that an input matching no other rule still
     produces an output. This prevents "dead zones" in a Mamdani system.
-- You have 17 rules, not the full 3^4 = 81 combinations. A Mamdani FIS does not need
-    every combination because rules fire PARTIALLY (by degree of match); a curated set
-    plus the veto and default rules covers the input space.
