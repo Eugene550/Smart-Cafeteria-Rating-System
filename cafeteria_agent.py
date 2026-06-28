@@ -1,5 +1,5 @@
 """
-Smart Cafeteria Rating System — Agentic Layer (PA3)
+Smart Cafeteria Rating System — Agentic Layer
 ====================================================
 A small autonomous agent that EVOLVES THE FUZZY SOLUTION ITSELF.
 
