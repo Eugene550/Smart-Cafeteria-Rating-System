@@ -155,64 +155,131 @@ def recommend(vectors, use_llm=True):
     return out
 
 
+# ---------- structured OVERALL recommendation per cafeteria ----------
+def overall_recommendation(caf, vec, rating, use_llm=True):
+    """A whole-cafeteria summary: rating, strongest + weakest aspect, and an
+    overall LLM-written suggestion (template fallback). Returns a dict so the
+    UI can lay out each field."""
+    strongest = max(ASPECTS, key=lambda a: vec[a])
+    weakest   = min(ASPECTS, key=lambda a: vec[a])
+    scores_txt = ", ".join(f"{a} {vec[a]}" for a in ASPECTS)
+
+    overall = None
+    if use_llm:
+        prompt = (
+            f"A cafeteria scored (0-1 each): {scores_txt}. Overall rating {rating}/5.0.\n"
+            f"Its strongest aspect is {strongest}, weakest is {weakest}.\n"
+            "Write ONE short overall recommendation (max 25 words) for management: "
+            "acknowledge the strength and advise on the weakness. Reply with only the sentence."
+        )
+        try:
+            out = llm_call(prompt).strip().strip('"')
+            if out:
+                overall = out.split("\n")[0]
+        except Exception:
+            overall = None
+    if overall is None:        # template fallback
+        overall = (f"Maintain strong {strongest.lower()}; "
+                   f"prioritise improving {weakest.lower()} ({ADVICE[weakest]}).")
+
+    return {
+        "cafeteria": caf,
+        "rating": rating,
+        "level": label(rating),
+        "scores": {a: vec[a] for a in ASPECTS},
+        "strongest": {"aspect": strongest, "score": vec[strongest]},
+        "weakest":   {"aspect": weakest,   "score": vec[weakest]},
+        "overall_recommendation": overall,
+    }
+
+
 # ================================ RUN THE AGENT ================================
-if __name__ == "__main__":
-    # --- setup: reuse the existing pipeline, FCM sets the baseline MFs ---
+def run_agent(verbose=True, use_llm=True, save_json="results.json"):
+    """Run the full agentic loop and return a results dict (also saved to JSON
+    for the UI). Importable: `from cafeteria_agent import run_agent`."""
+    import json
+
     matching, vu = load_lexicon(LEX)
     sia = build_analyzer(vu)
     scored = score_dataframe(load_reviews_csv(CSV), sia, matching, vu)
-    baseline_mfs = learn_membership_functions(scored)      # <-- FCM baseline (untouched)
+    baseline_mfs = learn_membership_functions(scored)      # FCM baseline (untouched)
     vectors, _ = cafeteria_vectors(scored)
-
     base_sanity, base_ratings = evaluate(baseline_mfs, vectors)
 
-    print("=" * 60)
-    print("AGENTIC LAYER — sense / reason / act / reflect")
-    print("=" * 60)
+    log = []
+    def say(msg):
+        log.append(msg)
+        if verbose:
+            print(msg)
+
+    say("=" * 60)
+    say("AGENTIC LAYER — sense / reason / act / reflect")
+    say("=" * 60)
 
     # --- SENSE ---
     problem, avg = sense(baseline_mfs, base_sanity)
-    print(f"\n[SENSE]  all-average cafeteria rates {avg} ({label(avg)})")
+    say(f"\n[SENSE]  all-average cafeteria rates {avg} ({label(avg)})")
+
+    action = {"problem_detected": bool(problem), "changed": False}
+    final_mfs = baseline_mfs
+
     if not problem:
-        print("         No problem detected — membership functions look healthy.")
-        print("         Agent takes no action (this is correct behaviour).")
+        say("         No problem detected — membership functions look healthy.")
+        say("         Agent takes no action (this is correct behaviour).")
     else:
-        print(f"         Problem: an average cafeteria is rated LOW (should be Medium).")
-        # --- REASON (LLM, with rule-based fallback) ---
+        say("         Problem: an average cafeteria is rated LOW (should be Medium).")
         culprit, source = reason_llm(baseline_mfs)
         c0 = round(float(baseline_mfs[culprit]['peaks'][0]), 3)
-        print(f"\n[REASON] ({source}) Culprit aspect: '{culprit}' — its Low centre is {c0},")
-        print(f"         so a mid score (0.5) is misread as Low. Plan: shift its")
-        print(f"         Low/Medium peaks down (bounded, max {MAX_SHIFT}).")
+        say(f"\n[REASON] ({source}) Culprit aspect: '{culprit}' — Low centre {c0}; "
+            f"plan: shift its Low/Medium peaks down (bounded, max {MAX_SHIFT}).")
 
-        # --- ACT + REFLECT (tries smallest safe fix, verifies, reverts if unsafe) ---
         fixed_mfs, used_shift, new_sanity = reflect(baseline_mfs, culprit, vectors, base_sanity)
-
         if fixed_mfs is None:
-            print(f"\n[ACT]    No bounded shift fixed it safely.")
-            print(f"[REFLECT] Reverting to FCM baseline (safety first).")
-            final_mfs = baseline_mfs
+            say("\n[ACT]    No bounded shift fixed it safely.")
+            say("[REFLECT] Reverting to FCM baseline (safety first).")
         else:
-            print(f"\n[ACT]    Shifted '{culprit}' peaks down by {used_shift}.")
-            print(f"           {[round(float(x),3) for x in baseline_mfs[culprit]['peaks']]}  ->  {fixed_mfs[culprit]['peaks']}")
-            print(f"[REFLECT] Re-checked sanity — fix accepted:")
-            print(f"           all-average : {base_sanity['all average']} ({label(base_sanity['all average'])})"
-                  f"  ->  {new_sanity['all average']} ({label(new_sanity['all average'])})")
-            print(f"           bad-food veto still {label(new_sanity['bad food'])}, "
-                  f"all-excellent still {label(new_sanity['all excellent'])}")
+            say(f"\n[ACT]    Shifted '{culprit}' peaks down by {used_shift}: "
+                f"{[round(float(x),3) for x in baseline_mfs[culprit]['peaks']]} -> {fixed_mfs[culprit]['peaks']}")
+            say(f"[REFLECT] Fix accepted — all-average {base_sanity['all average']} "
+                f"({label(base_sanity['all average'])}) -> {new_sanity['all average']} "
+                f"({label(new_sanity['all average'])}); veto still Low, excellent still High.")
             final_mfs = fixed_mfs
+            action.update({"changed": True, "aspect": culprit, "reasoned_by": source,
+                           "shift": used_shift})
 
-        # --- show before/after cafeteria ratings ---
-        _, final_ratings = evaluate(final_mfs, vectors)
-        print("\n--- Cafeteria ratings: before -> after the agent ---")
-        for caf in vectors:
-            b, f = base_ratings[caf], final_ratings[caf]
-            print(f"   {caf:34} {b} ({label(b)})  ->  {f} ({label(f)})")
+    # final ratings (after any change)
+    _, final_ratings = evaluate(final_mfs, vectors)
 
-    # --- EXTERNAL OUTPUT: recommendations (the practical half) ---
-    print("\n" + "=" * 60)
-    print("RECOMMENDATIONS (external action)")
-    print("=" * 60)
-    for caf, (asp, val, advice) in recommend(vectors).items():
-        print(f"   {caf}")
-        print(f"      weakest aspect: {asp} ({val}) -> {advice}\n")
+    # --- structured overall recommendations (LLM, template fallback) ---
+    cafeterias = [overall_recommendation(caf, vectors[caf], final_ratings[caf], use_llm)
+                  for caf in vectors]
+
+    if verbose:
+        print("\n" + "=" * 60)
+        print("OVERALL RECOMMENDATIONS (per cafeteria)")
+        print("=" * 60)
+        for c in cafeterias:
+            print(f"\n   {c['cafeteria']}  —  {c['rating']}/5.0 ({c['level']})")
+            print(f"      strongest : {c['strongest']['aspect']} ({c['strongest']['score']})")
+            print(f"      weakest   : {c['weakest']['aspect']} ({c['weakest']['score']})")
+            print(f"      overall   : {c['overall_recommendation']}")
+
+    results = {
+        "agent_action": action,
+        "ratings_before": {c: base_ratings[c] for c in vectors},
+        "ratings_after":  {c: final_ratings[c] for c in vectors},
+        "cafeterias": cafeterias,
+        "log": log,
+    }
+
+    if save_json:
+        with open(save_json, "w") as f:
+            json.dump(results, f, indent=2)
+        if verbose:
+            print(f"\n[saved] {save_json}  (the UI can read this)")
+
+    return results
+
+
+if __name__ == "__main__":
+    run_agent(verbose=True, use_llm=True)
